@@ -212,44 +212,44 @@
 //     ((std::println("{}: {}", typeid(args).name(), args)), ...);
 // }
 
-template <typename F, typename R>
- R mapf(F&& func, R range) {
-    std::transform(
-        std::begin(range),
-        std::end(range),
-        std::begin(range),
-        std::forward<F>(func)
-    );
-    return range;
-}
+// template <typename F, typename R>
+//  R mapf(F&& func, R range) {
+//     std::transform(
+//         std::begin(range),
+//         std::end(range),
+//         std::begin(range),
+//         std::forward<F>(func)
+//     );
+//     return range;
+// }
 
-template <typename F, typename R>
-void mapfr(F&& func, const R& range) {
-    std::transform(
-        std::begin(range),
-        std::end(range),
-        std::begin(range),
-        std::forward<F>(func)
-    );
-}
+// template <typename F, typename R>
+// void mapfr(F&& func, const R& range) {
+//     std::transform(
+//         std::begin(range),
+//         std::end(range),
+//         std::begin(range),
+//         std::forward<F>(func)
+//     );
+// }
 
-template <typename F, typename R>
-auto fold_left(F&& func, const R& range, const auto init) {
-    return std::accumulate(
-        std::begin(range),
-        std::end(range),
-        init);
-}
+// template <typename F, typename R>
+// auto fold_left(F&& func, const R& range, const auto init) {
+//     return std::accumulate(
+//         std::begin(range),
+//         std::end(range),
+//         init);
+// }
 
-template <typename F, typename G>
-auto compose(F&& f, G&& g) {
-    return [=](auto x) { return f(g(x)); };
-}
+// template <typename F, typename G>
+// auto compose(F&& f, G&& g) {
+//     return [=](auto x) { return f(g(x)); };
+// }
 
-template <typename F, typename... R>
-auto compose(F&& f, R&&... r) {
-    return [=](auto x) { return f(compose(r...)(x)); };
-}
+// template <typename F, typename... R>
+// auto compose(F&& f, R&&... r) {
+//     return [=](auto x) { return f(compose(r...)(x)); };
+// }
 
 // template <typename T = double>
 // struct fround {
@@ -437,19 +437,19 @@ int main(int argc, char* argv[]) {
     // }
     // std::println();
 
-    auto functor = compose(
-        [](const auto val) { return std::to_string(val); },
-        [](const auto val) { return val * val; }
-    );
-    std::vector<int> v = {1, 2, 3, 4, 5, 6};
-    std::for_each(std::begin(v), std::end(v), [&](const auto x){ std::println("{}", functor(x)); });
+    // auto functor = compose(
+    //     [](const auto val) { return std::to_string(val); },
+    //     [](const auto val) { return val * val; }
+    // );
+    // std::vector<int> v = {1, 2, 3, 4, 5, 6};
+    // std::for_each(std::begin(v), std::end(v), [&](const auto x){ std::println("{}", functor(x)); });
 
-    auto s = compose(
-        [](const auto& v) { std::println("{}", v); return fold_left(std::plus<>(), v, 0); },
-        [](const auto& v) { std::println("{}", v); return mapf([](const auto i) { return i + i; }, v); },
-        [](const auto& v) { std::println("{}", v); return mapf([](const auto i) { return i * i; }, v); }
-    )(v);
-    std::println("{}", s);
+    // auto s = compose(
+    //     [](const auto& v) { std::println("{}", v); return fold_left(std::plus<>(), v, 0); },
+    //     [](const auto& v) { std::println("{}", v); return mapf([](const auto i) { return i + i; }, v); },
+    //     [](const auto& v) { std::println("{}", v); return mapf([](const auto i) { return i * i; }, v); }
+    // )(v);
+    // std::println("{}", s);
     /************************ END FUNCTIONS *******************************/
 
     return 0;
