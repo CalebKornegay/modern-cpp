@@ -4,6 +4,7 @@
 #include <format>
 #include <functional>
 #include <iostream>
+#include <numeric>
 #include <print>
 #include <ranges>
 #include <regex>
@@ -160,58 +161,59 @@
 // }
 // constexpr std::size_t size = 10;
 
-template <typename T>
-struct Minimum {
-    constexpr T operator()(T a, T b) {
-        return a <= b ? a : b;
-    }
-};
+// template <typename T>
+// struct Minimum {
+//     constexpr T operator()(T a, T b) {
+//         return a <= b ? a : b;
+//     }
+// };
 
-template <typename T>
-struct Maxmimum {
-    constexpr T operator()(T a, T b) {
-        return a >= b ? a : b;
-    }
-};
+// template <typename T>
+// struct Maxmimum {
+//     constexpr T operator()(T a, T b) {
+//         return a >= b ? a : b;
+//     }
+// };
 
 // template <typename T, template <typename> typename M>
 // T trimin(T a, T b, T c) {
 //     return M<T>{}(a, M<T>{}(b, c));
 // }
 
-template <typename T, template <typename> typename M>
-constexpr T xmin(T a, T b) {
-    if !consteval {
-        std::cout << __PRETTY_FUNCTION__ << std::endl;
-    }
-    return M<T>{}(a, b);
-}
+// template <typename T, template <typename> typename M>
+// constexpr T xmin(T a, T b) {
+//     if !consteval {
+//         std::cout << __PRETTY_FUNCTION__ << std::endl;
+//     }
+//     return M<T>{}(a, b);
+// }
 
-template <typename T, template <typename> typename M, typename... Args>
-constexpr T xmin(T a, Args&&... args) {
-    if !consteval {
-        std::cout << __PRETTY_FUNCTION__ << std::endl;
-    }
-    return M<T>{}(a, xmin<T, M>(args...));
-}
-
-template <typename... Args>
-constexpr auto add_pack(Args&&... args) {
-    return (... + args);
-    // return (1 + ... + args);
-    // return (args + ...);
-    // return (args + ... + 1);
-    // return (1 + ... + args + 1);
-    // return (1 + args + ... + 1);
-}
+// template <typename T, template <typename> typename M, typename... Args>
+// constexpr T xmin(T a, Args&&... args) {
+//     if !consteval {
+//         std::cout << __PRETTY_FUNCTION__ << std::endl;
+//     }
+//     return M<T>{}(a, xmin<T, M>(args...));
+// }
 
 // template <typename... Args>
-void print_types(auto&&... args) {
-    ((std::println("{}: {}", typeid(args).name(), args)), ...);
-}
+// constexpr auto add_pack(Args&&... args) {
+//     return (... + args);
+//     // return (1 + ... + args);
+//     // return (args + ...);
+//     // return (args + ... + 1);
+//     // return (1 + ... + args + 1);
+//     // return (1 + args + ... + 1);
+// }
+
+// template <typename... Args>
+// void print_types(auto&&... args) {
+// // void print_types(Args&&... args) {
+//     ((std::println("{}: {}", typeid(args).name(), args)), ...);
+// }
 
 template <typename F, typename R>
-R mapf(F&& func, R range) {
+ R mapf(F&& func, R range) {
     std::transform(
         std::begin(range),
         std::end(range),
@@ -219,6 +221,34 @@ R mapf(F&& func, R range) {
         std::forward<F>(func)
     );
     return range;
+}
+
+template <typename F, typename R>
+void mapfr(F&& func, const R& range) {
+    std::transform(
+        std::begin(range),
+        std::end(range),
+        std::begin(range),
+        std::forward<F>(func)
+    );
+}
+
+template <typename F, typename R>
+auto fold_left(F&& func, const R& range, const auto init) {
+    return std::accumulate(
+        std::begin(range),
+        std::end(range),
+        init);
+}
+
+template <typename F, typename G>
+auto compose(F&& f, G&& g) {
+    return [=](auto x) { return f(g(x)); };
+}
+
+template <typename F, typename... R>
+auto compose(F&& f, R&&... r) {
+    return [=](auto x) { return f(compose(r...)(x)); };
 }
 
 // template <typename T = double>
@@ -230,28 +260,28 @@ R mapf(F&& func, R range) {
 //     }
 // };
 
-template <typename T = double>
-struct fround {
-    // T operator()(const T& value) const
-    //     requires std::floating_point<T> {
-    //         return std::round(value);
-    //     }
+// template <typename T = double>
+// struct fround {
+//     // T operator()(const T& value) const
+//     //     requires std::floating_point<T> {
+//     //         return std::round(value);
+//     //     }
 
-    // T operator()(const T& value) const 
-    //     requires std::integral<T> {
-    //         return value;
-    //     }
+//     // T operator()(const T& value) const
+//     //     requires std::integral<T> {
+//     //         return value;
+//     //     }
 
-    // ORRRRRR
+//     // ORRRRRR
 
-    T operator()(const T& value) const {
-        if constexpr(std::floating_point<T>) {
-            return std::round(value);
-        } else {
-            return value;
-        }
-    }
-};
+//     // T operator()(const T& value) const {
+//     //     if constexpr(std::floating_point<T>) {
+//     //         return std::round(value);
+//     //     } else {
+//     //         return value;
+//     //     }
+//     // }
+// };
 
 // template <typename T>
 // T sum(T a) {
@@ -346,7 +376,7 @@ int main(int argc, char* argv[]) {
     // auto output = lsum("hello"s, "hello");
     // auto output = lsum(0uz, 10);
     // std::println("{}", output);
-    
+
     // Default implementation - Try this later with consteval
     // constexpr int fib(const int n) {
     //     return n <=2 ? 1 : fib(n - 1) + fib (n - 2);
@@ -384,7 +414,7 @@ int main(int argc, char* argv[]) {
     // std::println("{}", sum(1, 2, 3, 4, 5));
     // constexpr auto value = fib(30);
     // std::println("{}", value);
-    
+
     // std::println("{}", xmin<int, Maxmimum>(1, 2, 3, 4, 5, 0));
     // auto output = xmin<int, Maxmimum>(1, 2, 3, 4, 5, 0);
     // static_assert(output == 5);
@@ -407,7 +437,19 @@ int main(int argc, char* argv[]) {
     // }
     // std::println();
 
-    
+    auto functor = compose(
+        [](const auto val) { return std::to_string(val); },
+        [](const auto val) { return val * val; }
+    );
+    std::vector<int> v = {1, 2, 3, 4, 5, 6};
+    std::for_each(std::begin(v), std::end(v), [&](const auto x){ std::println("{}", functor(x)); });
+
+    auto s = compose(
+        [](const auto& v) { std::println("{}", v); return fold_left(std::plus<>(), v, 0); },
+        [](const auto& v) { std::println("{}", v); return mapf([](const auto i) { return i + i; }, v); },
+        [](const auto& v) { std::println("{}", v); return mapf([](const auto i) { return i * i; }, v); }
+    )(v);
+    std::println("{}", s);
     /************************ END FUNCTIONS *******************************/
 
     return 0;
